@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert, Spinner, Modal, ListGroup } from 'react-bootstrap';
 import axios from 'axios';
-
 import { useNavigate } from 'react-router-dom';
-import SuperadminHeader from './composants/header';
-import SuperadminSidebar from './composants/sidebar';
+import LivreurSidebar from './composants/sidebar';
+import LivreurHeader from './composants/header';
 
 // Interface pour les données de l'utilisateur
 interface User {
@@ -28,7 +27,7 @@ interface LoadingState {
   resetPassword: boolean;
 }
 
-const ProfilePage = () => {
+const LivreurProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>('');
@@ -129,10 +128,10 @@ const ProfilePage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#fff' }}>
-      <SuperadminHeader />
+      <LivreurHeader />
       
       <div className="d-flex flex-grow-1">
-        <SuperadminSidebar />
+        <LivreurSidebar />
         
         <main className="flex-grow-1 p-4" style={{ backgroundColor: '#fffaf0' }}>
           <Container fluid>
@@ -281,4 +280,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default LivreurProfilePage;

@@ -131,7 +131,7 @@ const SuperAdminColis: React.FC = () => {
                       <tr>
                         <th className="border-0">Code de Suivi</th>
                         <th className="border-0">Destinataire</th>
-                        <th className="border-0">Receptioniste</th>
+                       
                         <th className="border-0">Statut</th>
                         <th className="border-0 text-end">Actions</th>
                       </tr>
@@ -142,7 +142,7 @@ const SuperAdminColis: React.FC = () => {
                           <tr key={colis.id} className="border-bottom">
                             <td className="fw-bold" style={{ color: '#FF8C00' }}>{colis.code_suivi}</td>
                             <td>{colis.destinataire}</td>
-                            <td>{colis.receptionniste ? colis.receptionniste.nom : 'Inconnu'}</td>
+                            
                             <td>
                               <span className={`badge ${getStatusBadgeClass(colis.statut)}`}>
                                 {colis.statut}

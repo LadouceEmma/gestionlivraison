@@ -6,12 +6,12 @@ import {
   FaUsers, 
   FaChartBar, 
   FaSignOutAlt, 
-  FaHistory, 
   FaTruck, 
   FaBars,
   FaUserCircle,
-  FaUser,
-  FaBell
+  
+  FaEnvelope,
+  
 } from 'react-icons/fa';
 
 const ManagerSidebar = () => {
@@ -35,10 +35,9 @@ const ManagerSidebar = () => {
     { path: '/managercolis', label: 'Gestion des colis', icon: <FaBox /> },
     { path: '/managerlivraison', label: 'Livraison', icon: <FaTruck /> },
     { path: '/managerusers', label: 'Gestion Employés', icon: <FaUsers /> },
-    { path: '/managersuivi', label: 'Suivi colis', icon: <FaTruck /> },
-    { path: '/managerRapport', label: 'Historique', icon: <FaHistory /> },
-    { path: '/adminnotifications', label: 'Notifications', icon: <FaBell /> },
-    { path: '/userProfil', label: 'Mon Compte', icon: <FaUser /> }
+    { path: '/colis/historique/manager', label: 'Suivi colis', icon: <FaTruck /> },
+    { path: '/managerChat', label: 'Messagerie', icon: <FaEnvelope /> },
+   
   ];
 
   const handleLogout = () => {

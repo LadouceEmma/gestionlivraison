@@ -3,8 +3,8 @@ import { Container, Row, Col, Card, Form, Button, Alert, Spinner, Modal, ListGro
 import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
-import SuperadminHeader from './composants/header';
-import SuperadminSidebar from './composants/sidebar';
+import AdminHeader from './composants/header';
+import AdminSidebar from './composants/sidebar';
 
 // Interface pour les données de l'utilisateur
 interface User {
@@ -28,7 +28,7 @@ interface LoadingState {
   resetPassword: boolean;
 }
 
-const ProfilePage = () => {
+const AdminProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string>('');
@@ -129,10 +129,10 @@ const ProfilePage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#fff' }}>
-      <SuperadminHeader />
+      <AdminHeader />
       
       <div className="d-flex flex-grow-1">
-        <SuperadminSidebar />
+        <AdminSidebar />
         
         <main className="flex-grow-1 p-4" style={{ backgroundColor: '#fffaf0' }}>
           <Container fluid>
@@ -281,4 +281,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default AdminProfilePage;

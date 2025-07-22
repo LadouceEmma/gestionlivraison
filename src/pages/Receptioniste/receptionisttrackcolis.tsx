@@ -52,7 +52,7 @@ interface Colis {
   id: number;
   code_suivi: string;
   statut: string;
-  client_id?: number;
+  client_id: number;
   destinataire_nom: string;
   destinataire_adresse: string;
   agence_depart: number;
@@ -595,7 +595,7 @@ const SuiviColisReceptionnistPage = () => {
                               <Col md={6}>
                                 <ListGroup variant="flush">
                                   <ListGroup.Item className="bg-transparent">
-                                    <strong>Client ID:</strong> {selectedColis.client_id?.nom || 'Non spécifié'}
+                                    <strong>Client ID:</strong> {selectedColis.client_id || 'Non spécifié'}
                                   </ListGroup.Item>
                                   <ListGroup.Item className="bg-transparent">
                                     <strong>Destinataire:</strong> {selectedColis.destinataire_nom}

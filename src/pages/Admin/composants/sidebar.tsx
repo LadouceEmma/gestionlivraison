@@ -10,9 +10,8 @@ import {
   FaTruck, 
   FaBars,
   FaUserCircle,
-  FaUser,
-  FaServicestack,
-  FaBell
+ 
+  FaServicestack
 } from 'react-icons/fa';
 
 const AdminSidebar = () => {
@@ -36,10 +35,9 @@ const AdminSidebar = () => {
     { path: '/admincolis', label: 'Gestion des colis', icon: <FaBox /> },
     { path: '/adminusers', label: 'Utilisateurs', icon: <FaUsers /> },
     { path: '/assigncolis', label: 'Livraisons', icon: <FaServicestack /> },
-    { path: '/adminsuivi', label: 'Suivi colis', icon: <FaTruck /> },
+    { path: '//colis/historique/admin', label: 'Suivi colis', icon: <FaTruck /> },
     { path: '/adminhistorique', label: 'Historique', icon: <FaHistory /> },
-    { path: '/adminnotifications', label: 'Notifications', icon: <FaBell /> },
-    { path: '/userProfil', label: 'Mon Compte', icon: <FaUser /> }
+   
   ];
 
   const handleLogout = () => {

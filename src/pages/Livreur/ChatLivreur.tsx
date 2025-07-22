@@ -4,9 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import ManagerSidebar from './composants/sidebar';
-import ManagerHeader from './composants/header';
+import Sidebar from './composants/sidebar';
+import Header from './composants/header';
 
 interface Message {
   id: number;
@@ -32,7 +31,7 @@ interface Colis {
   nom: string;
 }
 
-const ManagerChat = () => {
+const LivreurChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [nouveauMessage, setNouveauMessage] = useState('');
   const [utilisateurs, setUtilisateurs] = useState<User[]>([]);
@@ -199,9 +198,9 @@ const ManagerChat = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
-      <ManagerHeader />
+      <Header />
       <div className="d-flex flex-grow-1">
-        <ManagerSidebar />
+        <Sidebar />
         <main className="flex-grow-1 p-3">
           <Container fluid className="h-100">
             <Row className="h-100 g-3">
@@ -579,4 +578,4 @@ const ManagerChat = () => {
   );
 };
 
-export default ManagerChat;
+export default LivreurChat;

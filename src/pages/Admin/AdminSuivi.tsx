@@ -277,7 +277,7 @@ const AdminSuivi= () => {
 
   const handleViewHistory = () => {
     if (selectedColis?.code_suivi) {
-      navigate(`/colis/${selectedColis.code_suivi}/historique`);
+      navigate(`/colis/historique/admin`);
     }
   };
 

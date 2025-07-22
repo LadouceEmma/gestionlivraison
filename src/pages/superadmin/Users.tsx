@@ -180,7 +180,7 @@ const Users = () => {
                         <th className="text-uppercase small fw-bold text-orange px-3 py-3">Email</th>
                         <th className="text-uppercase small fw-bold text-orange px-3 py-3">Téléphone</th>
                         <th className="text-uppercase small fw-bold text-orange px-3 py-3">Rôle</th>
-                        <th className="text-uppercase small fw-bold text-orange px-3 py-3">Agence</th>
+                       
                         <th className="text-uppercase small fw-bold text-orange px-3 py-3">Statut</th>
                         <th className="text-uppercase small fw-bold text-orange px-3 py-3">Actions</th>
                       </tr>
@@ -231,11 +231,7 @@ const Users = () => {
                                 {user.role === 'admin' ? 'Administrateur' : 'Manager'}
                               </span>
                             </td>
-                            <td className="px-3 py-3">
-                              {user.agence_id ? 
-                                agencies.find(a => a.id === user.agence_id)?.nom || user.agence_id : 
-                                <span className="text-muted fst-italic">Non définie</span>}
-                            </td>
+                            
                             <td className="px-3 py-3">
                               <span className={`badge rounded-pill ${user.is_active ? 'bg-success' : 'bg-danger'} py-2 px-3`}>
                                 {user.is_active ? "Actif" : "Inactif"}

@@ -8,7 +8,7 @@ import {
   FaTruck, 
   FaBars,
   FaUserCircle,
-  FaUser,
+ 
   FaMapMarkerAlt,
   FaEnvelope
 } from 'react-icons/fa';
@@ -33,9 +33,9 @@ const LivreurSidebar = () => {
     { path: '/livreurdashboard', label: 'Dashboard', icon: <FaBox /> },
     { path: '/livreurmeslivraisons', label: 'Mes Livraisons', icon: <FaTruck /> },
     { path: '/livreursuivi', label: 'Suivi colis', icon: <FaMapMarkerAlt /> },
-    { path: '/livreurhistorique', label: 'Historique', icon: <FaHistory /> },
-    { path: '/livreurchat', label: 'Messageries', icon: <FaEnvelope /> },
-    { path: '/livreurprofil', label: 'Mon Compte', icon: <FaUser /> }
+
+    { path: '/livreurchat', label: 'Messagerie', icon: <FaEnvelope /> },
+    
   ];
 
   const handleLogout = () => {

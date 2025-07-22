@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import ReceptionistSidebar from './composants/sidebar';
+import ReceptionistHeader from './composants/header';
 import ManagerHeader from './composants/header';
 import ManagerSidebar from './composants/sidebar';
 
@@ -7,7 +9,7 @@ interface Colis {
   id: number;
   code_suivi: string;
   statut: string;
-  livreur_nom?: string;
+  livreur?: string;
 }
 
 interface Livreur {
@@ -15,7 +17,12 @@ interface Livreur {
   nom: string;
 }
 
-const STATUTS = ['Assigné', 'En cours de livraison', 'Livré'];
+// Statuts possibles selon le statut actuel du colis
+const STATUTS_POSSIBLES: Record<string, string[]> = {
+  'Expédié': ['En livraison'],
+  'En livraison': ['Livré'],
+  'Livré': []
+};
 
 const ManagerLivraison: React.FC = () => {
   const [colisList, setColisList] = useState<Colis[]>([]);
@@ -26,15 +33,15 @@ const ManagerLivraison: React.FC = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    fetchColisArrivants();
-    fetchLivreurs();
-  }, []);
-
   const headers = {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
+
+  useEffect(() => {
+    fetchColisArrivants();
+    fetchLivreurs();
+  }, []);
 
   const fetchColisArrivants = async () => {
     try {
@@ -102,17 +109,24 @@ const ManagerLivraison: React.FC = () => {
       );
       alert('Statut modifié avec succès !');
       fetchColisArrivants();
+      // Reset statut choisi pour ce colis
+      setStatutsChoisis((prev) => ({ ...prev, [colisId]: '' }));
     } catch (error: any) {
       const message = error.response?.data?.error || 'Erreur lors du changement de statut.';
       alert(`Erreur : ${message}`);
     }
   };
 
+  // Retourne les statuts possibles à choisir selon le statut actuel
+  const getStatutsPossibles = (statutActuel: string) => {
+    return STATUTS_POSSIBLES[statutActuel] || [];
+  };
+
+  // Classe CSS badge selon le statut
   const getStatutBadgeClass = (statut: string) => {
     switch (statut) {
-      case 'Arrivé': return 'bg-secondary';
-      case 'Assigné': return 'bg-warning text-dark';
-      case 'En cours de livraison': return 'bg-info';
+      case 'Expédié': return 'bg-warning text-dark';
+      case 'En livraison': return 'bg-info text-white';
       case 'Livré': return 'bg-success';
       default: return 'bg-secondary';
     }
@@ -154,6 +168,9 @@ const ManagerLivraison: React.FC = () => {
           padding: 8px 12px;
           border-radius: 20px;
           font-weight: 600;
+          display: inline-block;
+          min-width: 110px;
+          text-align: center;
         }
         .card-orange {
           border-left: 4px solid #ff8c00;
@@ -173,13 +190,13 @@ const ManagerLivraison: React.FC = () => {
         }
       `}</style>
       
-      <div className="dashboard-container min-vh-100 d-flex flex-column bg-light">
+      <div className="dashboardcontainer min-vh-100 d-flex flex-column bg-light">
         <ManagerHeader />
         <div className="d-flex flex-grow-1">
           <ManagerSidebar />
           <main className="flex-grow-1 p-5">
             <div className="container-fluid">
-              
+
               {/* Section Header */}
               <div className="row mb-4">
                 <div className="col-12">
@@ -292,99 +309,111 @@ const ManagerLivraison: React.FC = () => {
                           </thead>
                           <tbody>
                             {colisList.length > 0 ? (
-                              colisList.map((colis) => (
-                                <tr 
-                                  key={colis.id} 
-                                  className={selectedColisId === colis.id ? 'selected-row' : ''}
-                                >
-                                  <td className="py-4 px-4">
-                                    <div className="fw-bold text-primary fs-5">#{colis.id}</div>
-                                  </td>
-                                  <td className="py-4">
-                                    <code className="bg-light px-3 py-2 rounded fs-6 fw-bold">
-                                      {colis.code_suivi}
-                                    </code>
-                                  </td>
-                                  <td className="py-4">
-                                    <span className={`badge status-badge ${getStatutBadgeClass(colis.statut)}`}>
-                                      {colis.statut}
-                                    </span>
-                                  </td>
-                                  <td className="py-4">
-                                    {colis.livreur_nom ? (
-                                      <div className="d-flex align-items-center">
-                                        <div className="bg-success rounded-circle p-2 me-3">
-                                          <i className="text-white">🚚</i>
+                              colisList.map((colis) => {
+                                const statutsPossibles = getStatutsPossibles(colis.statut);
+                                const isAssignable = colis.statut === 'Expédié' && !colis.livreur;
+                                const isDesassignable = colis.statut === 'Expédié' && colis.livreur;
+
+                                return (
+                                  <tr 
+                                    key={colis.id} 
+                                    className={selectedColisId === colis.id ? 'selected-row' : ''}
+                                  >
+                                    <td className="py-4 px-4">
+                                      <div className="fw-bold text-primary fs-5">#{colis.id}</div>
+                                    </td>
+                                    <td className="py-4">
+                                      <code className="bg-light px-3 py-2 rounded fs-6 fw-bold">
+                                        {colis.code_suivi}
+                                      </code>
+                                    </td>
+                                    <td className="py-4">
+                                      <span className={`badge status-badge ${getStatutBadgeClass(colis.statut)}`}>
+                                        {colis.statut}
+                                      </span>
+                                    </td>
+                                    <td className="py-4">
+                                      {colis.livreur? (
+                                        <div className="d-flex align-items-center">
+                                          <div className="bg-success rounded-circle p-2 me-3">
+                                            <i className="text-white">🚚</i>
+                                          </div>
+                                          <div>
+                                            <div className="fw-bold">{colis.livreur}</div>
+                                            <small className="text-success">Assigné</small>
+                                          </div>
                                         </div>
-                                        <div>
-                                          <div className="fw-bold">{colis.livreur_nom}</div>
-                                          <small className="text-success">Assigné</small>
+                                      ) : (
+                                        <div className="d-flex align-items-center">
+                                          <div className="bg-secondary rounded-circle p-2 me-3">
+                                            <i className="text-white">❓</i>
+                                          </div>
+                                          <span className="text-muted fst-italic">Non assigné</span>
                                         </div>
-                                      </div>
-                                    ) : (
-                                      <div className="d-flex align-items-center">
-                                        <div className="bg-secondary rounded-circle p-2 me-3">
-                                          <i className="text-white">❓</i>
+                                      )}
+                                    </td>
+                                    <td className="py-4 text-center">
+                                      {statutsPossibles.length > 0 ? (
+                                        <div className="d-flex flex-column align-items-center gap-2">
+                                          <select
+                                            className="form-select form-select-sm shadow-sm"
+                                            style={{ minWidth: '180px' }}
+                                            value={statutsChoisis[colis.id] || ''}
+                                            onChange={(e) =>
+                                              setStatutsChoisis({ ...statutsChoisis, [colis.id]: e.target.value })
+                                            }
+                                          >
+                                            <option value="">-- Nouveau statut --</option>
+                                            {statutsPossibles.map((s) => (
+                                              <option key={s} value={s}>
+                                                {s}
+                                              </option>
+                                            ))}
+                                          </select>
+                                          <button
+                                            className="btn btn-outline-warning btn-sm px-3"
+                                            onClick={() => changerStatutColis(colis.id)}
+                                            disabled={!statutsChoisis[colis.id]}
+                                          >
+                                            <i className="me-1">📝</i>Appliquer
+                                          </button>
                                         </div>
-                                        <span className="text-muted fst-italic">Non assigné</span>
-                                      </div>
-                                    )}
-                                  </td>
-                                  <td className="py-4">
-                                    <div className="d-flex flex-column align-items-center gap-2">
-                                      <select
-                                        className="form-select form-select-sm shadow-sm"
-                                        style={{ minWidth: '180px' }}
-                                        value={statutsChoisis[colis.id] || ''}
-                                        onChange={(e) =>
-                                          setStatutsChoisis({ ...statutsChoisis, [colis.id]: e.target.value })
-                                        }
-                                      >
-                                        <option value="">-- Nouveau statut --</option>
-                                        {STATUTS.map((s) => (
-                                          <option key={s} value={s}>
-                                            {s}
-                                          </option>
-                                        ))}
-                                      </select>
-                                      <button
-                                        className="btn btn-outline-warning btn-sm px-3"
-                                        onClick={() => changerStatutColis(colis.id)}
-                                        disabled={!statutsChoisis[colis.id]}
-                                      >
-                                        <i className="me-1">📝</i>Appliquer
-                                      </button>
-                                    </div>
-                                  </td>
-                                  <td className="py-4 text-center">
-                                    {colis.livreur_nom ? (
-                                      <button
-                                        className="btn btn-outline-danger btn-sm px-3"
-                                        onClick={() => desassignerColis(colis.id)}
-                                      >
-                                        <i className="me-1">❌</i>Désassigner
-                                      </button>
-                                    ) : (
-                                      <button
-                                        className={`btn btn-sm px-3 ${
-                                          selectedColisId === colis.id 
-                                            ? 'btn-warning' 
-                                            : 'btn-outline-success'
-                                        }`}
-                                        onClick={() => setSelectedColisId(
-                                          selectedColisId === colis.id ? null : colis.id
-                                        )}
-                                      >
-                                        {selectedColisId === colis.id ? (
-                                          <>✅ Sélectionné</>
-                                        ) : (
-                                          <>🎯 Sélectionner</>
-                                        )}
-                                      </button>
-                                    )}
-                                  </td>
-                                </tr>
-                              ))
+                                      ) : (
+                                        <small className="text-muted fst-italic">Aucune action</small>
+                                      )}
+                                    </td>
+                                    <td className="py-4 text-center">
+                                      {isDesassignable && (
+                                        <button
+                                          className="btn btn-outline-danger btn-sm px-3"
+                                          onClick={() => desassignerColis(colis.id)}
+                                        >
+                                          <i className="me-1">❌</i>Désassigner
+                                        </button>
+                                      )}
+                                      {isAssignable && (
+                                        <button
+                                          className={`btn btn-sm px-3 ${
+                                            selectedColisId === colis.id 
+                                              ? 'btn-warning' 
+                                              : 'btn-outline-success'
+                                          }`}
+                                          onClick={() => setSelectedColisId(
+                                            selectedColisId === colis.id ? null : colis.id
+                                          )}
+                                        >
+                                          {selectedColisId === colis.id ? (
+                                            <>✅ Sélectionné</>
+                                          ) : (
+                                            <>🎯 Sélectionner</>
+                                          )}
+                                        </button>
+                                      )}
+                                      {/* Sinon aucun bouton d'action */}
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             ) : (
                               <tr>
                                 <td colSpan={6} className="empty-state">
@@ -424,7 +453,7 @@ const ManagerLivraison: React.FC = () => {
                         <i style={{ fontSize: '2.5rem' }}>🚚</i>
                       </div>
                       <h2 className="text-warning mb-1 fw-bold">
-                        {colisList.filter(c => c.livreur_nom).length}
+                        {colisList.filter(c => c.livreur).length}
                       </h2>
                       <p className="text-muted mb-0 fw-semibold">Assignés</p>
                     </div>
@@ -447,10 +476,12 @@ const ManagerLivraison: React.FC = () => {
                   <div className="card stats-card h-100 text-center">
                     <div className="card-body py-4">
                       <div className="text-info mb-2">
-                        <i style={{ fontSize: '2.5rem' }}>👥</i>
+                        <i style={{ fontSize: '2.5rem' }}>🚛</i>
                       </div>
-                      <h2 className="text-info mb-1 fw-bold">{livreurs.length}</h2>
-                      <p className="text-muted mb-0 fw-semibold">Livreurs Actifs</p>
+                      <h2 className="text-info mb-1 fw-bold">
+                        {colisList.filter(c => c.statut === 'En livraison').length}
+                      </h2>
+                      <p className="text-muted mb-0 fw-semibold">En livraison</p>
                     </div>
                   </div>
                 </div>

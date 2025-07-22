@@ -1,16 +1,49 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../../services/UseProvider';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  FaBox, FaChartBar, FaSignOutAlt, FaHistory, FaTruck, FaBars, FaUserCircle, FaUser, FaEnvelope } from 'react-icons/fa';
+  FaBox, FaChartBar, FaSignOutAlt, FaHistory, FaTruck, 
+  FaBars, FaUserCircle, FaUser, FaEnvelope, FaBuilding, FaUserShield 
+} from 'react-icons/fa';
 
-const ReceptionistSidebar = () => {
+const Sidebar = () => {
   const user = useContext(UserContext);
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    agence_nom: '',
+    nom: ''
+  });
+  const [loading, setLoading] = useState(true);
 
-  if (user === null) {
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/profile', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
+        
+        setUserDetails({
+          agence_nom: data.agence?.nom || 'Non assigné',
+          nom: data.nom || 'Non assigné'
+        });
+      } catch (error) {
+        console.error("Erreur lors de la récupération des détails:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchUserDetails();
+    }
+  }, [user]);
+
+  if (!user) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
         <div className="spinner-border text-orange" role="status">
@@ -25,7 +58,7 @@ const ReceptionistSidebar = () => {
     { path: '/createcolis', label: 'Créer un Colis', icon: <FaBox /> },
     { path: '/SuiviColisReceptionnistPage', label: 'Suivre un Colis', icon: <FaTruck /> },
     { path: '/receptionnistLivraison', label: 'Voir les Colis', icon: <FaHistory /> },
-    { path: '/receptionnistChat', label: 'Messagerie', icon: <FaEnvelope /> },
+    { path: '/MessagesPage', label: 'Messagerie', icon: <FaEnvelope /> },
     { path: '/receptionistprofile', label: 'Mon Compte', icon: <FaUser /> }
   ];
 
@@ -57,15 +90,6 @@ const ReceptionistSidebar = () => {
           </button>
         </div>
 
-        <div className="text-center mb-4 px-3">
-          <div className="logo-container mb-3">
-            <div className="app-logo bg-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
-              <span className="text-orange fw-bold fs-4">R</span>
-            </div>
-          </div>
-          {!collapsed && <h5 className="fw-bold text-white">Réceptionniste</h5>}
-        </div>
-
         <div className={`user-info text-center mb-4 ${collapsed ? 'px-2' : 'px-3'}`}>
           {collapsed ? (
             <div className="d-flex justify-content-center">
@@ -73,11 +97,27 @@ const ReceptionistSidebar = () => {
             </div>
           ) : (
             <>
-              <div className="user-avatar bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" style={{ width: '50px', height: '50px' }}>
-                <span className="fw-bold">{user.nom?.charAt(0) || 'U'}</span>
+              <div className="user-avatar bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                   style={{ width: '50px', height: '50px' }}>
+                <span className="fw-bold">{user.nom?.charAt(0) || 'R'}</span>
               </div>
-              <h6 className="mt-2 mb-0 text-truncate text-white">{user.nom}</h6>
-              <p className="text-muted small text-truncate">{user.email}</p>
+             
+              {loading ? (
+                <div className="spinner-border spinner-border-sm text-light mt-2" role="status">
+                  <span className="visually-hidden">Chargement...</span>
+                </div>
+              ) : (
+                <>
+                  <div className="d-flex align-items-center justify-content-center mt-2">
+                    <FaBuilding className="text-light me-2" size={12} />
+                    <span className="small text-white">{userDetails.agence_nom}</span>
+                  </div>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <FaUserShield className="text-light me-2" size={12} />
+                    <span className="small text-white">{userDetails.nom}</span>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
@@ -144,6 +184,12 @@ const ReceptionistSidebar = () => {
           color: #dc2626;
         }
         
+        .user-avatar {
+          background-color: #f8f9fa;
+          color: #FF8C00;
+          font-weight: bold;
+        }
+        
         @media (max-width: 768px) {
           .sidebar-container:not(.collapsed) {
             position: absolute;
@@ -155,4 +201,4 @@ const ReceptionistSidebar = () => {
   );
 };
 
-export default ReceptionistSidebar;
+export default Sidebar;

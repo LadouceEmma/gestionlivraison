@@ -8,6 +8,7 @@ import {
   FaMoon,
   FaSun
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 interface SuperadminHeaderProps {
   toggleSidebar?: () => void;
@@ -18,6 +19,7 @@ const ManagerHeader: React.FC<SuperadminHeaderProps> = ({
   toggleSidebar, 
   sidebarCollapsed 
 }) => {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [notifications] = useState<number>(3);
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -26,11 +28,21 @@ const ManagerHeader: React.FC<SuperadminHeaderProps> = ({
     setDarkMode(!darkMode);
   };
 
+  const handleProfileClick = () => {
+    navigate('/profilmanager');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
-    <header className={`header shadow-sm d-flex justify-content-between align-items-center ${darkMode ? 'dark-mode' : ''}`} 
+    <header 
+      className={`header shadow-sm d-flex justify-content-between align-items-center ${darkMode ? 'dark-mode' : ''}`} 
       style={{ 
         height: '64px', 
-        backgroundColor: '#fff', // Fond blanc
+        backgroundColor: '#fff',
         padding: '0 20px', 
         color: darkMode ? '#fff' : '#000',
         position: 'fixed',
@@ -44,7 +56,7 @@ const ManagerHeader: React.FC<SuperadminHeaderProps> = ({
       <div className="d-flex align-items-center">
         <div className="d-block d-md-none me-3">
           <button 
-            className="btn btn-sm text-black border-0" // Icône noire
+            className="btn btn-sm text-black border-0" 
             onClick={toggleSidebar}
           >
             <FaBars />
@@ -125,9 +137,28 @@ const ManagerHeader: React.FC<SuperadminHeaderProps> = ({
             <span className="d-none d-md-inline">Manager</span>
           </button>
           <ul className="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-            <li><a className="dropdown-item" href="#profile">Mon profil</a></li>
-            <li><a className="dropdown-item" href="#settings">Paramètres</a></li>
+            <li>
+              <button 
+                className="dropdown-item" 
+                onClick={handleProfileClick}
+              >
+                Mon profil
+              </button>
+            </li>
+            <li>
+              <a className="dropdown-item" href="#settings">
+                Paramètres
+              </a>
+            </li>
             <li><hr className="dropdown-divider" /></li>
+            <li>
+              <button 
+                className="dropdown-item text-danger" 
+                onClick={handleLogout}
+              >
+                Se déconnecter
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -179,6 +210,10 @@ const ManagerHeader: React.FC<SuperadminHeaderProps> = ({
           .logo h1 {
             font-size: 1.2rem;
           }
+        }
+
+        .dropdown-item {
+          cursor: pointer;
         }
       `}</style>
     </header>

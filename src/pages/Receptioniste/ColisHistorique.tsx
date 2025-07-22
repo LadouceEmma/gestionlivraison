@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { Button, Table, Spinner, Alert, Card, Badge } from 'react-bootstrap';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
 import ReceptionistHeader from './composants/header';
 import ReceptionistSidebar from './composants/sidebar';
 
@@ -42,6 +43,47 @@ const ColisHistorique: React.FC = () => {
   const [historique, setHistorique] = useState<Suivi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Référence pour l'impression - CORRIGÉ
+  const handlePrint = useReactToPrint({
+    content: () => contentRef.current,
+    documentTitle: `Historique_Colis_${codeSuivi}`,
+    onBeforeGetContent: () => {
+      // Vérifier que le contenu est disponible
+      if (!contentRef.current) {
+        setError('Aucun contenu à imprimer');
+        return Promise.reject('Aucun contenu à imprimer');
+      }
+      return Promise.resolve();
+    },
+    pageStyle: `
+      @media print {
+        body { 
+          -webkit-print-color-adjust: exact; 
+          print-color-adjust: exact;
+          background-color: white;
+        }
+        body > *:not(#print-content) {
+          display: none !important;
+        }
+        #print-content {
+          display: block !important;
+          padding: 20px !important;
+          width: 100% !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .table-bordered th, .table-bordered td {
+          border: 1px solid #dee2e6 !important;
+        }
+        .badge { 
+          border: 1px solid transparent !important;
+        }
+      }
+    `,
+  });
 
   // Styles personnalisés
   const styles = {
@@ -80,6 +122,7 @@ const ColisHistorique: React.FC = () => {
         
         setColis(response.data.colis);
         setHistorique(response.data.historique);
+        setError('');
       } catch (err) {
         setError(err.response?.data?.message || "Erreur lors du chargement des données");
       } finally {
@@ -100,6 +143,34 @@ const ColisHistorique: React.FC = () => {
       'Retourné': 'danger'
     };
     return variants[status] || 'secondary';
+  };
+
+  // Fonction pour supprimer un suivi
+  const handleDeleteSuivi = async (suiviId: number) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce suivi ?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`http://localhost:5000/api/suivi/${suiviId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      // Recharger les données après suppression
+      const response = await axios.get(`http://localhost:5000/api/colis/${codeSuivi}/historique`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      setColis(response.data.colis);
+      setHistorique(response.data.historique);
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.message || "Erreur lors de la suppression");
+    }
   };
 
   // Affichage pendant le chargement
@@ -163,16 +234,18 @@ const ColisHistorique: React.FC = () => {
       <div className="d-flex flex-grow-1">
         <ReceptionistSidebar />
         <main className="flex-grow-1 p-4" style={{ backgroundColor: themeColors.lightGray }}>
-          <div className="container py-4">
+          {/* Conteneur d'impression avec ID explicite - CORRIGÉ */}
+          <div id="print-content" ref={contentRef} className="container py-4">
             {/* En-tête */}
             <div className="d-flex justify-content-between align-items-center mb-3" style={styles.header}>
               <h1 className="mb-0">Historique du colis {colis.code_suivi}</h1>
               <Button 
                 variant="light" 
-                onClick={() => window.print()}
+                onClick={handlePrint}
+                className="no-print"
                 style={{ color: themeColors.orange }}
               >
-                Imprimer
+                Exporter PDF
               </Button>
             </div>
 
@@ -211,6 +284,7 @@ const ColisHistorique: React.FC = () => {
                         <th style={{ color: themeColors.white }}>Localisation</th>
                         <th style={{ color: themeColors.white }}>Commentaire</th>
                         <th style={{ color: themeColors.white }}>Responsable</th>
+                        <th style={{ color: themeColors.white }} className="no-print">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -225,6 +299,15 @@ const ColisHistorique: React.FC = () => {
                           <td>{suivi.location || '-'}</td>
                           <td>{suivi.commentaire || '-'}</td>
                           <td>{suivi.user.nom} ({suivi.user.role})</td>
+                          <td className="no-print">
+                            <Button 
+                              variant="danger" 
+                              size="sm"
+                              onClick={() => handleDeleteSuivi(suivi.id)}
+                            >
+                              Supprimer
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -235,11 +318,7 @@ const ColisHistorique: React.FC = () => {
           </div>
         </main>
       </div>
-       <style>
-        
-      </style>
     </div>
-   
   );
 };
 

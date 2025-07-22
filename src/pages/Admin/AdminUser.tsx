@@ -160,7 +160,7 @@ const AdminUserManagement: React.FC = () => {
               <tr>
                 <th>Nom</th>
                 <th>Email</th>
-                <th>Colis envoyés</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -168,7 +168,7 @@ const AdminUserManagement: React.FC = () => {
                 <tr key={client.id}>
                   <td>{client.nom}</td>
                   <td>{client.email}</td>
-                  <td>{/* Ajouter le total colis si backend retourne */}</td>
+                  
                 </tr>
               ))}
               {clients.length === 0 && <tr><td colSpan={3}>Aucun client trouvé</td></tr>}

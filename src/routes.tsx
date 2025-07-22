@@ -26,19 +26,30 @@ import ManagerLivraison from './pages/Manager/ManagerLivraison';
 import ManagerUsers from './pages/Manager/ManagerUsers';
 import ReceptionistDashboard from './pages/Receptioniste/receptionisteDashboard';
 import ClientDashboard from './pages/patient/ClientDashboard';
-//import LivreurDashboard from './pages/LivreurDashboard';
-import AddColis from './pages/AddColis';
 import DashboardReceptionist from './pages/Receptioniste/receptionisteDashboard';
 import CreateColis from './pages/Receptioniste/receptionnisteColis';
 import ReceptionnistLivraison from './pages/Receptioniste/receptionnistLivraison';
 import ProfilePage from './pages/superadmin/Profil';
 import SuiviColisReceptionnistPage from './pages/Receptioniste/receptionisttrackcolis';
 import ColisHistorique from './pages/Receptioniste/ColisHistorique';
-import SuiviColisManagerPage from './pages/Manager/ManagerSuivi';
+
 import AdminSuivi from './pages/Admin/AdminSuivi';
 import ColisHistoriqueAd from './pages/Admin/ColisHistoriqueAd';
 import ColisHistoriqueMan from './pages/Manager/ColisHistoriqueMan';
 import LivreurDashboard from './pages/Livreur/LivreurDashboard';
+import LivreurSuivi from './pages/Livreur/LivreurSuivi';
+import LivreurLivraisons from './pages/Livreur/LivreurLivraisons';
+import ClientHistory from './pages/patient/HistoriqueClient';
+import ClientSuivi from './pages/patient/ClientSuivi';
+import ColisPreenregistrement from './pages/patient/ColisPreenregistrement';
+import ChatApp from './pages/Receptioniste/ChatMessages';
+import ClientChat from './pages/patient/ClientChat';
+import LivreurChat from './pages/Livreur/ChatLivreur';
+import ManagerChat from './pages/Manager/ManagerHistorique';
+import ReceptionnisteProfilePage from './pages/Receptioniste/ProfileReceptionniste';
+import AdminProfilePage from './pages/Admin/AdminProfile';
+import ClientProfilePage from './pages/patient/ProfileClient';
+import LivreurProfilePage from './pages/Livreur/LivreurProfile';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -55,14 +66,27 @@ const AppRoutes: React.FC = () => {
         <Route path="/receptionnistedashboard" element={<ReceptionistDashboard />} />
         {/* Routes protégées */}
         
-        <Route
-          path="/addcolis"
-          element={<ProtectedRoute element={<AddColis />} allowedRoles={['admin', 'client']} />}
-        />
+        
         
         <Route
           path="/ClientDashboard"
          element={<ProtectedRoute element={<ClientDashboard />} allowedRoles={['client']} />}
+        />
+        <Route
+          path="/ClientHistory"
+         element={<ProtectedRoute element={<ClientHistory />} allowedRoles={['client']} />}
+        />
+         <Route
+          path="/ClientSuivi/:code_suivi"
+         element={<ProtectedRoute element={<ClientSuivi />} allowedRoles={['client']} />}
+        />
+         <Route
+          path="/clientchat"
+         element={<ProtectedRoute element={<ClientChat />} allowedRoles={['client']} />}
+        />
+         <Route
+          path="/ColisPreenregistrement"
+         element={<ProtectedRoute element={<ColisPreenregistrement />} allowedRoles={['client']} />}
         />
          <Route
           path="/AdminDashboard"
@@ -92,6 +116,22 @@ const AppRoutes: React.FC = () => {
           path="/LivreurDashboard"
          element={<ProtectedRoute element={<LivreurDashboard />} allowedRoles={['livreur']} />}
         /> 
+         <Route
+          path="/livreurchat"
+         element={<ProtectedRoute element={<LivreurChat />} allowedRoles={['livreur']} />}
+        /> 
+         <Route
+          path="/LivreurSuivi"
+         element={<ProtectedRoute element={<LivreurSuivi />} allowedRoles={['livreur']} />}
+        /> 
+         <Route
+          path="/Livreurmeslivraisons"
+         element={<ProtectedRoute element={<LivreurLivraisons />} allowedRoles={['livreur']} />}
+        /> 
+         <Route
+          path="/MessagesPage"
+         element={<ProtectedRoute element={<ChatApp />} allowedRoles={['receptionniste' ]} />}
+        /> 
           <Route
           path="/SuperAdminDashboard"
          element={<ProtectedRoute element={<SuperAdminDashboard />} allowedRoles={['superadmin']} />}
@@ -108,14 +148,15 @@ const AppRoutes: React.FC = () => {
           path="/managerlivraison"
          element={<ProtectedRoute element={<ManagerLivraison />} allowedRoles={['manager']} />}
         />
+         <Route
+          path="/managerchat"
+         element={<ProtectedRoute element={<ManagerChat />} allowedRoles={['manager']} />}
+        />
         <Route
           path="/ManagerUsers"
          element={<ProtectedRoute element={<ManagerUsers/>} allowedRoles={['manager']} />}
         />
-        <Route
-          path="/ManagerSuivi"
-         element={<ProtectedRoute element={<SuiviColisManagerPage/>} allowedRoles={['manager']} />}
-        />
+       
 
            <Route
           path="/agences"
@@ -161,12 +202,32 @@ const AppRoutes: React.FC = () => {
           path="/colis/:codeSuivi/historique"
          element={<ProtectedRoute element={< ColisHistorique/>} allowedRoles={['receptionniste']} />}
         />
+         <Route
+          path="profilreceptionniste"
+         element={<ProtectedRoute element={< ReceptionnisteProfilePage/>} allowedRoles={['receptionniste']} />}
+        />
+         <Route
+          path="profillivreur"
+         element={<ProtectedRoute element={< LivreurProfilePage/>} allowedRoles={['livreur']} />}
+        />
+         <Route
+          path="profilclient"
+         element={<ProtectedRoute element={< ClientProfilePage/>} allowedRoles={['client']} />}
+        />
+         <Route
+          path="profilmanager"
+         element={<ProtectedRoute element={< ReceptionnisteProfilePage/>} allowedRoles={['manager']} />}
+        />
+         <Route
+          path="profiladmin"
+         element={<ProtectedRoute element={< AdminProfilePage/>} allowedRoles={['admin']} />}
+        />
         <Route
-          path="/colis/:codeSuivi/historique"
+          path="/colis/historique/admin"
          element={<ProtectedRoute element={< ColisHistoriqueAd/>} allowedRoles={[ 'admin']} />}
         />
         <Route
-          path="/colis/:codeSuivi/historique"
+          path="colis/historique/manager"
          element={<ProtectedRoute element={< ColisHistoriqueMan/>} allowedRoles={['manager']} />}
         />
         {/* Route 404  */}
